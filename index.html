@@ -48,9 +48,9 @@
         <div class="field">
           <label class="field-label">Difficulty</label>
           <div class="chip-row" id="difficultyChips">
-            <button class="chip" data-diff="easy">Easy<span class="chip-sub">2–6 tables</span></button>
-            <button class="chip selected" data-diff="medium">Medium<span class="chip-sub">2–12 tables</span></button>
-            <button class="chip" data-diff="hard">Hard<span class="chip-sub">12–20 tables</span></button>
+            <button class="chip" data-diff="easy">Easy<span class="chip-sub">2–5 tables</span></button>
+            <button class="chip selected" data-diff="medium">Medium<span class="chip-sub">2–10 tables</span></button>
+            <button class="chip" data-diff="hard">Hard<span class="chip-sub">6–10 tables</span></button>
             <button class="chip" data-diff="custom">Custom<span class="chip-sub">you choose</span></button>
           </div>
         </div>
@@ -59,21 +59,21 @@
         <div id="customRanges" class="custom-ranges">
           <div class="range-grid">
             <div class="field">
-              <label class="field-label">Tables from <output id="tableMinOut">2</output> to <output id="tableMaxOut">12</output></label>
+              <label class="field-label">Tables from <output id="tableMinOut">2</output> to <output id="tableMaxOut">10</output></label>
               <div class="dual-range">
                 <span>2</span>
-                <input type="range" id="tableMin" min="2" max="30" value="2" />
-                <input type="range" id="tableMax" min="2" max="30" value="12" />
-                <span>30</span>
+                <input type="range" id="tableMin" min="2" max="10" value="2" />
+                <input type="range" id="tableMax" min="2" max="10" value="10" />
+                <span>10</span>
               </div>
             </div>
             <div class="field">
               <label class="field-label">Multiply by <output id="multMinOut">2</output> to <output id="multMaxOut">10</output></label>
               <div class="dual-range">
                 <span>1</span>
-                <input type="range" id="multMin" min="1" max="20" value="2" />
-                <input type="range" id="multMax" min="1" max="20" value="10" />
-                <span>20</span>
+                <input type="range" id="multMin" min="1" max="10" value="2" />
+                <input type="range" id="multMax" min="1" max="10" value="10" />
+                <span>10</span>
               </div>
             </div>
           </div>

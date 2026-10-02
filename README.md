@@ -5,8 +5,9 @@ A fast, clean web app for students to practice **dodging tables** (multiplicatio
 ## Features
 
 - **Fully random questions** from configurable table ranges (every combination possible)
+- **Tables strictly 2–10** — koi bhi table 10 se aage kabhi nahi aayega
 - **Typed answers only** — no multiple choice, no options, no hints. Just you vs. the table.
-- **Adjustable difficulty** — Easy (2–6), Medium (2–12), Hard (12–20), or fully custom ranges
+- **Adjustable difficulty** — Easy (2–5), Medium (2–10), Hard (6–10), or custom ranges within 2–10
 - **Customizable tests** — number of questions (5–100), timer mode (none / total / per-question), question order, × only or mixed × and ÷
 - **Full in-site report** after submitting — score, accuracy, grade (S/A/B/C/D/E), total & average time, fastest answer, best streak, per-question breakdown, and weak-spot analysis
 - **Retry wrong questions** with one click
