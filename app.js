@@ -19,7 +19,7 @@
   /* ---------------- State ---------------- */
   const settings = {
     difficulty: "medium",
-    tableMin: 2, tableMax: 12,
+    tableMin: 2, tableMax: 10,
     multMin: 2, multMax: 10,
     qCount: 20,
     timerMode: "total",          // none | total | perq
@@ -30,11 +30,24 @@
     sound: true,
   };
 
+  // HARD LIMITS — dodging tables are strictly 2 se 10 tak, kabhi aage nahi.
+  const TABLE_ABS_MIN = 2, TABLE_ABS_MAX = 10;
+  const MULT_ABS_MIN = 1, MULT_ABS_MAX = 10;
+
   const DIFF_PRESETS = {
-    easy:   { tableMin: 2,  tableMax: 6,  multMin: 2, multMax: 10 },
-    medium: { tableMin: 2,  tableMax: 12, multMin: 2, multMax: 10 },
-    hard:   { tableMin: 12, tableMax: 20, multMin: 2, multMax: 15 },
+    easy:   { tableMin: 2, tableMax: 5,  multMin: 2, multMax: 10 },
+    medium: { tableMin: 2, tableMax: 10, multMin: 2, multMax: 10 },
+    hard:   { tableMin: 6, tableMax: 10, multMin: 2, multMax: 10 },
   };
+
+  // Safety net: no matter how settings got set, questions can NEVER
+  // go outside tables 2–10 (and multipliers 1–10).
+  function enforceLimits() {
+    settings.tableMin = Math.min(TABLE_ABS_MAX, Math.max(TABLE_ABS_MIN, settings.tableMin));
+    settings.tableMax = Math.min(TABLE_ABS_MAX, Math.max(TABLE_ABS_MIN, settings.tableMax));
+    settings.multMin  = Math.min(MULT_ABS_MAX,  Math.max(MULT_ABS_MIN,  settings.multMin));
+    settings.multMax  = Math.min(MULT_ABS_MAX,  Math.max(MULT_ABS_MIN,  settings.multMax));
+  }
 
   let quiz = null;               // active quiz object
   let tickInterval = null;
@@ -229,6 +242,7 @@
      QUIZ ENGINE
      ============================================================ */
   function startQuiz(questionsOverride, isRetry = false) {
+    enforceLimits(); // strictly 2–10 tables, uske aage ek bhi nahi
     const questions = questionsOverride || generateQuestions();
     quiz = {
       questions,
