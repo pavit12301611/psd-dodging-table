@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DodgeTables — Random Dodging Table Practice</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- floating background blobs -->
+  <div class="bg-blobs" aria-hidden="true">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-logo">⚡</span>
+      <span class="brand-name">Dodge<strong>Tables</strong></span>
+    </div>
+    <div class="top-actions">
+      <button id="soundToggle" class="icon-btn" title="Toggle sound">🔊</button>
+      <button id="homeBtn" class="icon-btn hidden" title="Back to setup">⚙️</button>
+    </div>
+  </header>
+
+  <main class="stage">
+
+    <!-- ============ SETUP SCREEN ============ -->
+    <section id="setupScreen" class="screen active">
+      <div class="hero">
+        <h1 class="hero-title">Dodge the <span class="grad-text">Tables</span></h1>
+        <p class="hero-sub">Random multiplication questions. Type the answer — no options, no hints. Pure speed &amp; memory.</p>
+      </div>
+
+      <div class="panel setup-panel">
+        <h2 class="panel-title">Test Setup</h2>
+
+        <!-- Difficulty presets -->
+        <div class="field">
+          <label class="field-label">Difficulty</label>
+          <div class="chip-row" id="difficultyChips">
+            <button class="chip" data-diff="easy">Easy<span class="chip-sub">2–6 tables</span></button>
+            <button class="chip selected" data-diff="medium">Medium<span class="chip-sub">2–12 tables</span></button>
+            <button class="chip" data-diff="hard">Hard<span class="chip-sub">12–20 tables</span></button>
+            <button class="chip" data-diff="custom">Custom<span class="chip-sub">you choose</span></button>
+          </div>
+        </div>
+
+        <!-- Custom ranges -->
+        <div id="customRanges" class="custom-ranges">
+          <div class="range-grid">
+            <div class="field">
+              <label class="field-label">Tables from <output id="tableMinOut">2</output> to <output id="tableMaxOut">12</output></label>
+              <div class="dual-range">
+                <span>2</span>
+                <input type="range" id="tableMin" min="2" max="30" value="2" />
+                <input type="range" id="tableMax" min="2" max="30" value="12" />
+                <span>30</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Multiply by <output id="multMinOut">2</output> to <output id="multMaxOut">10</output></label>
+              <div class="dual-range">
+                <span>1</span>
+                <input type="range" id="multMin" min="1" max="20" value="2" />
+                <input type="range" id="multMax" min="1" max="20" value="10" />
+                <span>20</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="setup-grid">
+          <!-- Number of questions -->
+          <div class="field">
+            <label class="field-label">Questions: <output id="qCountOut">20</output></label>
+            <div class="range-line">
+              <span>5</span>
+              <input type="range" id="qCount" min="5" max="100" step="5" value="20" />
+              <span>100</span>
+            </div>
+          </div>
+
+          <!-- Timer mode -->
+          <div class="field">
+            <label class="field-label">Timer</label>
+            <div class="chip-row" id="timerChips">
+              <button class="chip small" data-timer="none">No timer</button>
+              <button class="chip small selected" data-timer="total">Total time</button>
+              <button class="chip small" data-timer="perq">Per question</button>
+            </div>
+          </div>
+
+          <!-- Total time -->
+          <div class="field" id="totalTimeField">
+            <label class="field-label">Total time: <output id="totalTimeOut">3:00</output></label>
+            <div class="range-line">
+              <span>1m</span>
+              <input type="range" id="totalTime" min="60" max="900" step="30" value="180" />
+              <span>15m</span>
+            </div>
+          </div>
+
+          <!-- Per-question time -->
+          <div class="field hidden" id="perqTimeField">
+            <label class="field-label">Seconds per question: <output id="perqTimeOut">10</output>s</label>
+            <div class="range-line">
+              <span>3s</span>
+              <input type="range" id="perqTime" min="3" max="60" value="10" />
+              <span>60s</span>
+            </div>
+          </div>
+
+          <!-- Order -->
+          <div class="field">
+            <label class="field-label">Question order</label>
+            <div class="chip-row" id="orderChips">
+              <button class="chip small selected" data-order="random">Fully random</button>
+              <button class="chip small" data-order="norepeat">Random, no repeats</button>
+            </div>
+          </div>
+
+          <!-- Mode -->
+          <div class="field">
+            <label class="field-label">Mode</label>
+            <div class="chip-row" id="modeChips">
+              <button class="chip small selected" data-mode="mul">Multiplication</button>
+              <button class="chip small" data-mode="mixed">Mixed (× and ÷)</button>
+            </div>
+          </div>
+        </div>
+
+        <button id="startBtn" class="cta-btn">
+          <span>Start Test</span>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <p class="combos-note" id="combosNote"></p>
+      </div>
+
+      <!-- History -->
+      <div class="panel history-panel" id="historyPanel">
+        <h2 class="panel-title">Recent Attempts</h2>
+        <div id="historyList" class="history-list"></div>
+        <button id="clearHistoryBtn" class="ghost-btn hidden">Clear history</button>
+      </div>
+    </section>
+
+    <!-- ============ QUIZ SCREEN ============ -->
+    <section id="quizScreen" class="screen">
+      <div class="quiz-top">
+        <div class="quiz-progress-wrap">
+          <div class="quiz-progress-label"><span id="qIndex">1</span> / <span id="qTotal">20</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+        <div class="quiz-timer" id="quizTimer">3:00</div>
+        <button id="endEarlyBtn" class="ghost-btn danger">End test</button>
+      </div>
+
+      <div class="panel quiz-panel">
+        <div class="q-card">
+          <div class="perq-ring-wrap hidden" id="perqRingWrap">
+            <svg class="perq-ring" viewBox="0 0 60 60">
+              <circle class="ring-bg" cx="30" cy="30" r="26"/>
+              <circle class="ring-fg" id="perqRingFg" cx="30" cy="30" r="26"/>
+            </svg>
+            <span class="perq-num" id="perqNum">10</span>
+          </div>
+          <div class="q-text" id="questionText">7 × 8</div>
+          <div class="q-equals">=</div>
+          <form id="answerForm" autocomplete="off">
+            <input
+              id="answerInput"
+              class="answer-input"
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              placeholder="?"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+            />
+            <button type="submit" class="submit-btn" id="submitBtn">Submit ↵</button>
+          </form>
+          <p class="quiz-hint-note">Type the answer &amp; press Enter</p>
+        </div>
+        <div class="streak-row">
+          <span class="streak-pill" id="streakPill">🔥 Streak: 0</span>
+          <span class="score-pill" id="scorePill">✅ 0 correct</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ REPORT SCREEN ============ -->
+    <section id="reportScreen" class="screen">
+      <canvas id="confettiCanvas"></canvas>
+
+      <div class="report-head">
+        <div class="grade-badge" id="gradeBadge">A</div>
+        <h1 class="report-title" id="reportTitle">Great job!</h1>
+        <p class="report-sub" id="reportSub"></p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-val" id="statScore">0/0</div><div class="stat-label">Score</div></div>
+        <div class="stat-card"><div class="stat-val" id="statAcc">0%</div><div class="stat-label">Accuracy</div></div>
+        <div class="stat-card"><div class="stat-val" id="statTime">0:00</div><div class="stat-label">Total time</div></div>
+        <div class="stat-card"><div class="stat-val" id="statAvg">—</div><div class="stat-label">Avg / question</div></div>
+        <div class="stat-card"><div class="stat-val" id="statFastest">—</div><div class="stat-label">Fastest answer</div></div>
+        <div class="stat-card"><div class="stat-val" id="statStreak">0</div><div class="stat-label">Best streak</div></div>
+      </div>
+
+      <div class="panel">
+        <h2 class="panel-title">Question Report</h2>
+        <div class="report-table-wrap">
+          <table class="report-table">
+            <thead>
+              <tr><th>#</th><th>Question</th><th>Your answer</th><th>Correct</th><th>Time</th><th></th></tr>
+            </thead>
+            <tbody id="reportBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel" id="weakPanel">
+        <h2 class="panel-title">Weak Spots 🎯</h2>
+        <div id="weakList" class="weak-list"></div>
+      </div>
+
+      <div class="report-actions">
+        <button id="retryWrongBtn" class="cta-btn secondary hidden">Retry wrong questions</button>
+        <button id="newTestBtn" class="cta-btn">New test</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">Built for students • Speed comes from repetition ⚡</footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

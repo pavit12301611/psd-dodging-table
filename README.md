@@ -1,1 +1,32 @@
-# psd-dodging-table
+# ⚡ DodgeTables — Random Dodging Table Practice
+
+A fast, clean web app for students to practice **dodging tables** (multiplication tables in random order).
+
+## Features
+
+- **Fully random questions** from configurable table ranges (every combination possible)
+- **Typed answers only** — no multiple choice, no options, no hints. Just you vs. the table.
+- **Adjustable difficulty** — Easy (2–6), Medium (2–12), Hard (12–20), or fully custom ranges
+- **Customizable tests** — number of questions (5–100), timer mode (none / total / per-question), question order, × only or mixed × and ÷
+- **Full in-site report** after submitting — score, accuracy, grade (S/A/B/C/D/E), total & average time, fastest answer, best streak, per-question breakdown, and weak-spot analysis
+- **Retry wrong questions** with one click
+- **Attempt history** saved locally with grades
+- Sound effects + confetti for high scores 🎉
+
+## Run it
+
+It's a plain static site — just serve the folder:
+
+```bash
+python3 -m http.server 3000
+```
+
+Then open `http://localhost:3000`.
+
+## Files
+
+| File | Purpose |
+|------|---------|
+| `index.html` | App structure (setup / quiz / report screens) |
+| `styles.css` | Dark glass UI theme |
+| `app.js` | Quiz engine, timers, report generation, history |
