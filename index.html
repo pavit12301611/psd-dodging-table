@@ -38,7 +38,7 @@
     <section id="setupScreen" class="screen active">
       <div class="hero">
         <h1 class="hero-title">Dodge the <span class="grad-text">Tables</span></h1>
-        <p class="hero-sub">Random multiplication questions. Type the answer — no options, no hints. Pure speed &amp; memory.</p>
+        <p class="hero-sub">Learn tables 2–10, then practise with typed answers, MCQs, matching and missing-number challenges.</p>
       </div>
 
       <div class="panel setup-panel">
@@ -70,8 +70,8 @@
             <div class="field">
               <label class="field-label">Multiply by <output id="multMinOut">2</output> to <output id="multMaxOut">10</output></label>
               <div class="dual-range">
-                <span>1</span>
-                <input type="range" id="multMin" min="1" max="10" value="2" />
+                <span>2</span>
+                <input type="range" id="multMin" min="2" max="10" value="2" />
                 <input type="range" id="multMax" min="1" max="10" value="10" />
                 <span>10</span>
               </div>
@@ -129,12 +129,24 @@
             </div>
           </div>
 
-          <!-- Mode -->
+          <!-- Operation -->
           <div class="field">
-            <label class="field-label">Mode</label>
+            <label class="field-label">Operation</label>
             <div class="chip-row" id="modeChips">
               <button class="chip small selected" data-mode="mul">Multiplication</button>
               <button class="chip small" data-mode="mixed">Mixed (× and ÷)</button>
+            </div>
+          </div>
+
+          <!-- Question style -->
+          <div class="field question-style-field">
+            <label class="field-label">Question style</label>
+            <div class="chip-row" id="questionTypeChips">
+              <button class="chip small selected" data-qtype="typed">Type answer</button>
+              <button class="chip small" data-qtype="mcq">MCQ</button>
+              <button class="chip small" data-qtype="match">Match</button>
+              <button class="chip small" data-qtype="missing">Missing number</button>
+              <button class="chip small" data-qtype="variety">All types</button>
             </div>
           </div>
         </div>
@@ -144,6 +156,15 @@
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
         <p class="combos-note" id="combosNote"></p>
+      </div>
+
+      <!-- Learning tables -->
+      <div class="panel learn-panel">
+        <div class="learn-heading">
+          <div><h2 class="panel-title">Learn Tables 2–10</h2><p class="learn-copy">Tap a table to open or close it. Every fact stays strictly between tables 2 and 10.</p></div>
+          <button id="toggleTablesBtn" class="ghost-btn">Show all</button>
+        </div>
+        <div id="learningTables" class="learning-tables"></div>
       </div>
 
       <!-- History -->
@@ -191,7 +212,8 @@
             />
             <button type="submit" class="submit-btn" id="submitBtn">Submit ↵</button>
           </form>
-          <p class="quiz-hint-note">Type the answer &amp; press Enter</p>
+          <div id="choiceGrid" class="choice-grid hidden" role="group" aria-label="Answer choices"></div>
+          <p class="quiz-hint-note" id="quizHint">Type the answer &amp; press Enter</p>
         </div>
         <div class="streak-row">
           <span class="streak-pill" id="streakPill">🔥 Streak: 0</span>

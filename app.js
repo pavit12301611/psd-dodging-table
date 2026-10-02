@@ -1,7 +1,7 @@
 /* ============================================================
    DodgeTables — random dodging-table practice for students
    - Fully random questions from configurable ranges
-   - Typed answers ONLY (no options, no hints)
+   - Typed, MCQ, matching and missing-number questions
    - Configurable: difficulty, question count, timer, mode
    - Full in-site report after submission
    ============================================================ */
@@ -27,12 +27,13 @@
     perqTime: 10,                // seconds
     order: "random",             // random | norepeat
     mode: "mul",                 // mul | mixed
+    questionType: "typed",       // typed | mcq | match | missing | variety
     sound: true,
   };
 
   // HARD LIMITS — dodging tables are strictly 2 se 10 tak, kabhi aage nahi.
   const TABLE_ABS_MIN = 2, TABLE_ABS_MAX = 10;
-  const MULT_ABS_MIN = 1, MULT_ABS_MAX = 10;
+  const MULT_ABS_MIN = 2, MULT_ABS_MAX = 10;
 
   const DIFF_PRESETS = {
     easy:   { tableMin: 2, tableMax: 5,  multMin: 2, multMax: 10 },
@@ -137,6 +138,7 @@
 
   wireChips("orderChips", "order", (val) => { settings.order = val; updateCombosNote(); });
   wireChips("modeChips", "mode", (val) => { settings.mode = val; });
+  wireChips("questionTypeChips", "qtype", (val) => { settings.questionType = val; });
 
   // sliders
   function bindRange(id, outId, key, fmt = (v) => v, after) {
@@ -201,19 +203,37 @@
   /* ============================================================
      QUESTION GENERATION
      ============================================================ */
+  function makeChoices(answer) {
+    const values = new Set([answer]);
+    while (values.size < 4) {
+      const offset = rand(-10, 10);
+      const candidate = answer + (offset === 0 ? rand(1, 5) : offset);
+      if (candidate >= 2 && candidate <= 100) values.add(candidate);
+    }
+    return shuffle([...values]);
+  }
+
   function makeQuestion(a, b, forceMode) {
     let op = "×";
     let answer = a * b;
     let text = `${a} × ${b}`;
     const mode = forceMode || settings.mode;
-    if (mode === "mixed" && Math.random() < 0.5) {
-      // division: flip a×b = p  →  p ÷ a = b
+    let questionType = settings.questionType === "variety"
+      ? ["typed", "mcq", "match", "missing"][rand(0, 3)]
+      : settings.questionType;
+
+    if (questionType === "missing") {
+      answer = b;
+      text = `${a} × ? = ${a * b}`;
+    } else if (mode === "mixed" && Math.random() < 0.5) {
       const p = a * b;
       op = "÷";
       answer = b;
       text = `${p} ÷ ${a}`;
     }
-    return { text, answer, base: a, mult: b, op };
+    if (questionType === "match") text = `Match ${text} to its answer`;
+    const choices = questionType === "mcq" || questionType === "match" ? makeChoices(answer) : null;
+    return { text, answer, base: a, mult: b, op, questionType, choices };
   }
 
   function generateQuestions() {
@@ -278,9 +298,29 @@
     $("progressFill").style.width = `${(quiz.index / quiz.questions.length) * 100}%`;
 
     const input = $("answerInput");
+    const form = $("answerForm");
+    const choiceGrid = $("choiceGrid");
+    const usesChoices = q.questionType === "mcq" || q.questionType === "match";
     input.value = "";
     input.classList.remove("shake", "flash-good");
-    setTimeout(() => input.focus(), 60);
+    form.classList.toggle("hidden", usesChoices);
+    choiceGrid.classList.toggle("hidden", !usesChoices);
+    choiceGrid.innerHTML = "";
+    if (usesChoices) {
+      q.choices.forEach((choice) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = q.questionType === "match" ? "choice-btn match-choice" : "choice-btn";
+        btn.textContent = q.questionType === "match" ? `→  ${choice}` : choice;
+        btn.addEventListener("click", () => submitAnswer(false, choice));
+        choiceGrid.appendChild(btn);
+      });
+    } else {
+      setTimeout(() => input.focus(), 60);
+    }
+    $("quizHint").textContent = usesChoices
+      ? (q.questionType === "match" ? "Choose the matching answer" : "Choose one answer")
+      : (q.questionType === "missing" ? "Type the missing number" : "Type the answer & press Enter");
 
     quiz.qStartTime = Date.now();
     if (settings.timerMode === "perq") {
@@ -327,11 +367,11 @@
     }, 100);
   }
 
-  function submitAnswer(timedOut = false) {
+  function submitAnswer(timedOut = false, selectedAnswer = null) {
     if (!quiz || quiz.finished) return;
 
     const input = $("answerInput");
-    const raw = input.value.trim();
+    const raw = selectedAnswer === null ? input.value.trim() : String(selectedAnswer);
     const q = quiz.questions[quiz.index];
     const elapsed = (Date.now() - quiz.qStartTime) / 1000;
 
@@ -639,7 +679,30 @@
     })();
   }
 
+  /* ---------------- Learning tables (strictly 2–10) ---------------- */
+  function buildLearningTables() {
+    const wrap = $("learningTables");
+    for (let table = 2; table <= 10; table++) {
+      const card = document.createElement("details");
+      card.className = "learn-table";
+      card.innerHTML = `<summary><span>${table}</span> Table of ${table}<b>+</b></summary>
+        <div class="facts">${Array.from({ length: 9 }, (_, i) => {
+          const multiplier = i + 2;
+          return `<div><span>${table} × ${multiplier}</span><strong>${table * multiplier}</strong></div>`;
+        }).join("")}</div>`;
+      wrap.appendChild(card);
+    }
+  }
+
+  $("toggleTablesBtn").addEventListener("click", () => {
+    const cards = [...document.querySelectorAll(".learn-table")];
+    const openAll = cards.some((card) => !card.open);
+    cards.forEach((card) => { card.open = openAll; });
+    $("toggleTablesBtn").textContent = openAll ? "Hide all" : "Show all";
+  });
+
   /* ---------------- init ---------------- */
+  buildLearningTables();
   syncRangeInputs();
   $("customRanges").classList.add("collapsed");
   updateCombosNote();
